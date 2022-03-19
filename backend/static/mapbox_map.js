@@ -31,7 +31,8 @@ map.on('load', () => {
 map.on('click', 'places', (e) => {
 
     const coordinates = e.features[0].geometry.coordinates.slice();
-    const description = e.features[0].properties.description;
+    const description = e.features[0].properties.NAME1;
+    //console.log(e.features)
      
     
     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
