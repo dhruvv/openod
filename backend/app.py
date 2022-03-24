@@ -32,11 +32,6 @@ def get_data(file_wanted):
                 
     return None
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/api/<file_id>')
 def return_geojson(file_id):
     return jsonify(get_data(file_id))
