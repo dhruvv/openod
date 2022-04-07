@@ -2,13 +2,30 @@ from flask import Flask, jsonify, render_template
 import json
 from pyDataverse.api import NativeApi, DataAccessApi
 from pyDataverse.models import Dataverse
+from flask_cors import CORS
+from pytopojson import feature
+import numpy as np
+from shapely.geometry import Polygon, Point
+import logging
+
 
 app = Flask(__name__)
+CORS(app)
 API_TOKEN = "ac71d785-30b7-4fd0-9c16-6cf118783533"
 BASE_URL = "https://datacommons.tdai.osu.edu"
-
+counties_list = []
 api = NativeApi(BASE_URL, API_TOKEN)
 data_api = DataAccessApi(BASE_URL, API_TOKEN)
+def is_in_county(county, lng, lat):
+    global counties_list
+    for c in counties_list:
+        if c["properties"]["NAME"] == county:
+            poly = c
+    coords = poly["geometry"]['coordinates'][0]
+    polygon = Polygon(coords)
+    point = Point(lng, lat)
+    #with open("log.txt", "w+") as w:   
+    return(polygon.contains(point))
 
 def get_data(file_wanted):
     DOI =  "doi:10.5072/FK2/P9B4YV"
@@ -27,10 +44,21 @@ def get_data(file_wanted):
             geojson = json.loads(rc.decode('utf-8'))
             #print(geojson)
             geojson["type"] = "FeatureCollection"
-            return geojson
-        # OPTIMIZE THIS THIS IS REALLY BAD
-                
+            for feature in geojson["features"]:
+                lng = feature["geometry"]["coordinates"][0]
+                lat = feature["geometry"]["coordinates"][1]
+                if not (is_in_county("Jackson", lng, lat) or is_in_county("Scioto", lng, lat)):
+                    geojson["features"].remove(feature)
+            return geojson   
     return None
+
+@app.before_first_request
+def load_counties():
+    global counties_list
+    with open("counties.json", "r") as f:
+        counties_json = json.load(f)
+    fe = feature.Feature()
+    counties_list = fe(counties_json, 'cb_2015_ohio_county_20m')['features']
 
 @app.route('/api/<file_id>')
 def return_geojson(file_id):
