@@ -29,7 +29,7 @@ function Map() {
             'layout': {},
             'paint': {
             'fill-color': '#0080ff', // blue color fill
-            'fill-opacity': 0.3
+            'fill-opacity': 0.1
             }
             });
             // Add a black outline around the polygon.
@@ -43,6 +43,29 @@ function Map() {
             'line-width': 3
             }
             });
+                map.current.addSource('scioto', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Scioto"});
+                // Add a new layer to visualize the polygon.
+            map.current.addLayer({
+                'id': 'scioto',
+                'type': 'fill',
+                'source': 'scioto', // reference the data source
+                'layout': {},
+                'paint': {
+                'fill-color': '#e892de', // blue color fill
+                'fill-opacity': 0.1
+                }
+                });
+                // Add a black outline around the polygon.
+                map.current.addLayer({
+                'id': 'outline2',
+                'type': 'line',
+                'source': 'scioto',
+                'layout': {},
+                'paint': {
+                'line-color': '#000',
+                'line-width': 3
+                }
+                });
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
