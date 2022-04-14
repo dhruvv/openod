@@ -4,11 +4,13 @@ import './App.css';
 //import React, { useRef, useEffect, useState } from 'react'; 
 //mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
 import Map from './Map';
+import PersistentDrawerLeft from './Sidebar';
 
 function App() {
 
   return (
     <div>
+      <PersistentDrawerLeft />
       <Map />
     </div>
   );

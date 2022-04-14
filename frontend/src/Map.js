@@ -13,13 +13,36 @@ function Map() {
         map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-82.994149, 39.965160],
+        center: [-82.636, 39.052],
         zoom: zoom
         });
         });
         useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => {
+            map.current.addSource('jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
+            // Add a new layer to visualize the polygon.
+        map.current.addLayer({
+            'id': 'jackson',
+            'type': 'fill',
+            'source': 'jackson', // reference the data source
+            'layout': {},
+            'paint': {
+            'fill-color': '#0080ff', // blue color fill
+            'fill-opacity': 0.3
+            }
+            });
+            // Add a black outline around the polygon.
+            map.current.addLayer({
+            'id': 'outline',
+            'type': 'line',
+            'source': 'jackson',
+            'layout': {},
+            'paint': {
+            'line-color': '#000',
+            'line-width': 3
+            }
+            });
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
@@ -35,9 +58,79 @@ function Map() {
                     'icon-allow-overlap': true
             }  
             });
+            map.current.addSource('places2', {type:"geojson", data:"http://127.0.0.1:5000/api/Project_Down"});
+            map.current.addLayer({
+            'id': 'places2',
+            'type': 'symbol',
+            'source': 'places2',
+            'layout': {
+            
+                    'icon-image': 'custom-marker',
+                    'icon-allow-overlap': true
+            }  
+            });
+            map.current.addSource('places3', {type:"geojson", data:"http://127.0.0.1:5000/api/SAMASA"});
+            map.current.addLayer({
+            'id': 'places3',
+            'type': 'symbol',
+            'source': 'places3',
+            'layout': {
+            
+                    'icon-image': 'custom-marker',
+                    'icon-allow-overlap': true
+            }  
+            });
         });
 
         });
+        map.current.on('click', 'places', (e) => {
+
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const description = e.features[0].properties.NAME1;
+            //console.log(e.features)
+             
+            
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+             
+            new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(description)
+            .addTo(map.current);
+            });
+            map.current.on('click', 'places2', (e) => {
+
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const description = e.features[0].properties.NAME1;
+                //console.log(e.features)
+                 
+                
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                 
+                new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map.current);
+                });
+                map.current.on('click', 'places3', (e) => {
+
+                    const coordinates = e.features[0].geometry.coordinates.slice();
+                    const description = e.features[0].properties.NAME1;
+                    //console.log(e.features)
+                     
+                    
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                     
+                    new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map.current);
+                    });
     });
         /*
     useEffect(() => {

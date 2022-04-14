@@ -43,14 +43,26 @@ def get_data(file_wanted):
             rc = response.content
             geojson = json.loads(rc.decode('utf-8'))
             #print(geojson)
-            geojson["type"] = "FeatureCollection"
+            #geojson["type"] = "FeatureCollection"
+            finalGeoJson = { "type": "FeatureCollection","features": []}
             for feature in geojson["features"]:
                 lng = feature["geometry"]["coordinates"][0]
                 lat = feature["geometry"]["coordinates"][1]
-                if not (is_in_county("Jackson", lng, lat) or is_in_county("Scioto", lng, lat)):
-                    geojson["features"].remove(feature)
-            return geojson   
+                is_there =  (is_in_county("Scioto", lng, lat) or is_in_county("Jackson", lng, lat))
+                if (is_there):
+                    #jss["features"].remove(feature)
+                    finalGeoJson["features"].append(feature)
+
+            return finalGeoJson   
     return None
+
+def get_county_data(county_id):
+    global counties_list
+    for c in counties_list:
+        if c["properties"]["NAME"] == county_id:
+            poly = c
+    return poly
+
 
 @app.before_first_request
 def load_counties():
@@ -63,6 +75,10 @@ def load_counties():
 @app.route('/api/<file_id>')
 def return_geojson(file_id):
     return jsonify(get_data(file_id))
+
+@app.route('/api/county_boundaries/<county_id>')
+def return_county_boundary(county_id):
+    return jsonify(get_county_data(county_id))
 
 
 
