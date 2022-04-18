@@ -16,7 +16,7 @@ function Map() {
         center: [-82.636, 39.052],
         zoom: zoom
         });
-        });
+    });
         useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => {
@@ -43,7 +43,7 @@ function Map() {
             'line-width': 3
             }
             });
-                map.current.addSource('scioto', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Scioto"});
+            map.current.addSource('scioto', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Scioto"});
                 // Add a new layer to visualize the polygon.
             map.current.addLayer({
                 'id': 'scioto',
