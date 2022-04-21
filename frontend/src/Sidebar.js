@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { FormGroup } from '@mui/material';
+import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 
 
 const drawerWidth = 240;
@@ -118,7 +118,7 @@ export default function PersistentDrawerLeft() {
               control={
                 <Checkbox 
                   defaultChecked
-                  onChange={modifyLayer}
+                  //onChange={modifyLayer}
                 />
               }
             />
