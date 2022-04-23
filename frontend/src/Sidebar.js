@@ -114,6 +114,15 @@ export default function PersistentDrawerLeft() {
         <Divider />
         <FormGroup>
             <FormControlLabel 
+              label="SAMASA"
+              control={
+                <Checkbox 
+                  defaultChecked
+                  //onChange={modifyLayer}
+                />
+              }
+            />
+            <FormControlLabel 
               label="NPPES"
               control={
                 <Checkbox 
