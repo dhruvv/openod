@@ -62,7 +62,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function PersistentDrawerLeft() {
+export default function PersistentDrawerLeft(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -114,14 +114,25 @@ export default function PersistentDrawerLeft() {
         <Divider />
         <FormGroup>
             <FormControlLabel 
-              label="NPPES"
+              label="NPPES" 
               control={
                 <Checkbox 
                   defaultChecked
-                  //onChange={modifyLayer}
+                  onChange={() => props.callback("NPPES")}
                 />
+                
               }
-            />
+            /> 
+            <FormControlLabel 
+            label="SAMASA" 
+            control={
+              <Checkbox 
+                defaultChecked
+                onChange={() => props.callback("SAMASA")}
+              />
+              
+            }
+          />
         </FormGroup>
       </Drawer>
     </Box>
