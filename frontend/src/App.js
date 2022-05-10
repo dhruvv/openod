@@ -7,23 +7,13 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
 
 function App() {
-  //const [visibilityArray, setArray] = useState(null);
   var visibilityArray = {"NPPES":"visible", "SAMASA":"visible", "Project_Down":"visible", "Jackson":"visible", "Scioto":"visible"};
- // var noInvisible = true;
   const callbackFunction = (paramName) => {
-    //setArray({"NPPES":"visible", "SAMASA":"visible", "Project_Down":"visible", "Jackson":"visible", "Scioto":"visible"});
     const updatedArray = {...visibilityArray};
-    //console.log("Hit callback function");
     if (visibilityArray[paramName] == "visible"){
-      //updatedArray[paramName] = "none";
       visibilityArray[paramName] = "none";
-      //setArray(updatedArray);
-      //noInvisible = false;
     } else {
-      //updatedArray[paramName] = "visible";
       visibilityArray[paramName] = "visible";
-      //setArray(updatedArray);
-      //noInvisible = true;
     }
     const keys = Object.keys(visibilityArray);
     for (var i = 0; i < keys.length; i++) {

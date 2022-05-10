@@ -114,22 +114,12 @@ export default function PersistentDrawerLeft(props) {
         <Divider />
         <FormGroup>
             <FormControlLabel 
-              label="SAMASA"
-              control={
-                <Checkbox 
-                  defaultChecked
-                  //onChange={modifyLayer}
-                />
-              }
-            />
-            <FormControlLabel 
               label="NPPES"
               control={
                 <Checkbox 
                   defaultChecked
                   onChange={() => props.callback("NPPES")}
                 />
-                
               }
             /> 
             <FormControlLabel 
@@ -139,7 +129,15 @@ export default function PersistentDrawerLeft(props) {
                 defaultChecked
                 onChange={() => props.callback("SAMASA")}
               />
-              
+            }
+          />
+             <FormControlLabel 
+            label="Project_Down" 
+            control={
+              <Checkbox 
+                defaultChecked
+                onChange={() => props.callback("Project_Down")}
+              />
             }
           />
         </FormGroup>
