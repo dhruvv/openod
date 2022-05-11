@@ -7,7 +7,14 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
 
 function App() {
-  var visibilityArray = {"NPPES":"visible", "SAMASA":"visible", "Project_Down":"visible", "Jackson":"visible", "Scioto":"visible"};
+  // This array defines whether a layer should be shown or not
+  var visibilityArray = {"NPPES":"visible", 
+                        "SAMASA":"visible", 
+                        "Project_Down":"visible", 
+                        "Jackson":"visible", 
+                        "Scioto":"visible",
+                        "zipcodes":"visible"
+  };
   const callbackFunction = (paramName) => {
     const updatedArray = {...visibilityArray};
     if (visibilityArray[paramName] == "visible"){
@@ -17,8 +24,9 @@ function App() {
     }
     const keys = Object.keys(visibilityArray);
     for (var i = 0; i < keys.length; i++) {
-        map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
-        console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
+      
+      map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
+      console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
     }
   }
   const mapContainer = useRef(null);
@@ -42,9 +50,7 @@ function App() {
     useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => {
-            //setMap(map);
             map.current.addSource('Jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
-            // Add a new layer to visualize the polygon.
         map.current.addLayer({
             'id': 'Jackson',
             'type': 'fill',
@@ -80,7 +86,7 @@ function App() {
                 }
                 });
                 // Add a black outline around the polygon.
-                map.current.addLayer({
+              map.current.addLayer({
                 'id': 'outline2',
                 'type': 'line',
                 'source': 'Scioto',
@@ -89,7 +95,7 @@ function App() {
                 'line-color': '#000',
                 'line-width': 3
                 }
-                });
+              });
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
@@ -127,14 +133,18 @@ function App() {
                     'icon-allow-overlap': true
             }  
             });
-            if (visibilityArray) {
-                const keys = Object.keys(visibilityArray);
-                for (var i = 0; i < keys.length; i++) {
-                    map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
-                    console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
-                }
-            }
-         
+            map.current.addSource('zipcodes', {type: "geojson", data:"http://127.0.0.1:5000/api/zipcode_boundaries"});
+            map.current.addLayer({
+              'id': 'zipcodes',
+              'type': 'line',
+              'source': 'zipcodes',
+              'layout': {},
+              'paint': {
+              'line-color': '#000',
+              'line-width': 2
+              }
+            });
+            
 
         });
 

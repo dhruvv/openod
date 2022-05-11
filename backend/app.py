@@ -63,6 +63,10 @@ def get_county_data(county_id):
             poly = c
     return poly
 
+def get_zipcode_data():
+    with open("zipcodes.json", "r") as z:
+        zc = json.load(z)
+    return(zc)
 
 @app.before_first_request
 def load_counties():
@@ -79,6 +83,10 @@ def return_geojson(file_id):
 @app.route('/api/county_boundaries/<county_id>')
 def return_county_boundary(county_id):
     return jsonify(get_county_data(county_id))
+
+@app.route('/api/zipcode_boundaries')
+def return_zipcode_boundaries():
+    return jsonify(get_zipcode_data())
 
 
 
