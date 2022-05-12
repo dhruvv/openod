@@ -16,10 +16,11 @@ BASE_URL = "https://datacommons.tdai.osu.edu"
 counties_list = []
 api = NativeApi(BASE_URL, API_TOKEN)
 data_api = DataAccessApi(BASE_URL, API_TOKEN)
+
 def is_in_county(county, lng, lat):
     global counties_list
     for c in counties_list:
-        if c["properties"]["NAME"] == county:
+        if c["properties"]["name"] == county:
             poly = c
     coords = poly["geometry"]['coordinates'][0]
     polygon = Polygon(coords)
@@ -59,7 +60,7 @@ def get_data(file_wanted):
 def get_county_data(county_id):
     global counties_list
     for c in counties_list:
-        if c["properties"]["NAME"] == county_id:
+        if c["properties"]["name"] == county_id:
             poly = c
     return poly
 
@@ -71,10 +72,12 @@ def get_zipcode_data():
 @app.before_first_request
 def load_counties():
     global counties_list
-    with open("counties.json", "r") as f:
+    with open("counties.geojson", "r") as f:
         counties_json = json.load(f)
+    '''
     fe = feature.Feature()
-    counties_list = fe(counties_json, 'cb_2015_ohio_county_20m')['features']
+    counties_list = fe(counties_json, 'cb_2015_ohio_county_20m')['features']'''
+    counties_list = counties_json['features']
 
 @app.route('/api/<file_id>')
 def return_geojson(file_id):

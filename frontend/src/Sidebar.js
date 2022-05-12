@@ -140,21 +140,30 @@ export default function PersistentDrawerLeft(props) {
               />
             }
           />
-          <FormControlLabel 
-            label="Project_Down" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("Project_Down")}
-              />
-            }
-          />
            <FormControlLabel 
             label="Zipcode boundaries" 
             control={
               <Checkbox 
                 defaultChecked
                 onChange={() => props.callback("zipcodes")}
+              />
+            }
+          />
+            <FormControlLabel 
+            label="Jackson county outline and fill" 
+            control={
+              <Checkbox 
+                defaultChecked
+                onChange={() => props.callback("Jackson")}
+              />
+            }
+          />
+             <FormControlLabel 
+            label="Scioto County Outline and Fill" 
+            control={
+              <Checkbox 
+                defaultChecked
+                onChange={() => props.callback("Scioto")}
               />
             }
           />

@@ -15,6 +15,7 @@ function App() {
                         "Scioto":"visible",
                         "zipcodes":"visible"
   };
+  // Called by checkbox on / off 
   const callbackFunction = (paramName) => {
     const updatedArray = {...visibilityArray};
     if (visibilityArray[paramName] == "visible"){
@@ -24,17 +25,18 @@ function App() {
     }
     const keys = Object.keys(visibilityArray);
     for (var i = 0; i < keys.length; i++) {
-      
-      map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
-      console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
+      // If we are dealing with county boundary. update fill and outline layers since they are separate
+      if (keys[i] == "Jackson" || keys[i] == "Scioto") {
+        map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
+        map.current.setLayoutProperty(keys[i]+"Outline", "visibility", visibilityArray[keys[i]]);
+      } else { // Otherwise, set layer to visible or not
+        map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
+        console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
+      }
     }
   }
   const mapContainer = useRef(null);
     const map = useRef(null);
-    /*
-    const [lng, setLng] = useState(-70.9);
-    const [lat, setLat] = useState(42.35);
-    */
     const [zoom, setZoom] = useState(9);
     //const [value, setValue] = useState(props.visibilityArray);
     
@@ -64,7 +66,7 @@ function App() {
             });
             // Add a black outline around the polygon.
             map.current.addLayer({
-            'id': 'outline',
+            'id': 'JacksonOutline',
             'type': 'line',
             'source': 'Jackson',
             'layout': {},
@@ -87,7 +89,7 @@ function App() {
                 });
                 // Add a black outline around the polygon.
               map.current.addLayer({
-                'id': 'outline2',
+                'id': 'SciotoOutline',
                 'type': 'line',
                 'source': 'Scioto',
                 'layout': {},
@@ -140,8 +142,8 @@ function App() {
               'source': 'zipcodes',
               'layout': {},
               'paint': {
-              'line-color': '#000',
-              'line-width': 2
+              'line-color': '#808080',
+              'line-width': 1
               }
             });
             
@@ -149,23 +151,69 @@ function App() {
         });
 
         });
-        //map.current.setLayer
-        map.current.on('click', 'NPPES', (e) => {
+      const jPopup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+     
+      map.current.on('mouseenter', "Jackson", (e) => {
+        //const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = "Jackson County"
+        //console.log(e.lngLat.wrap());
+        const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
+        /*
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }*/
+        jPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
+      });
+      map.current.on('mouseleave', "Jackson", (e) => {
+        jPopup.remove();
+      });
+      map.current.on('mouseenter', "Scioto", (e) => {
+        //const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = "Scioto County"
+        //console.log(e.lngLat.wrap());
+        const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
+        /*
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }*/
+        jPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
+      });
+      map.current.on('mouseleave', "Scioto", (e) => {
+        jPopup.remove();
+      });
 
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const description = e.features[0].properties.NAME1 + " NPPES";
-            //console.log(e.features)
+      const zPopup = new mapboxgl.Popup();
+      map.current.on('mouseenter', "zipcodes", (e) => {
+        //const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = e.features[0].properties.ZCTA5CE10; 
+        //console.log(e.lngLat.wrap()); ZCTA5CE10
+        const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
+        /*
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }*/
+        zPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
+      });
+      map.current.on('mouseleave', "zipcodes", (e) => {
+        zPopup.remove();
+      });
+
+      map.current.on('click', 'NPPES', (e) => {
+
+          const coordinates = e.features[0].geometry.coordinates.slice();
+          const description = e.features[0].properties.NAME1 + " NPPES";
+          
+       
+          //console.log(coordinates);
              
-            
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
-             
-            new mapboxgl.Popup()
+          new mapboxgl.Popup()
             .setLngLat(coordinates)
             .setHTML(description)
             .addTo(map.current);
-            });
+        });
             map.current.on('click', 'Project_Down', (e) => {
 
                 const coordinates = e.features[0].geometry.coordinates.slice();
