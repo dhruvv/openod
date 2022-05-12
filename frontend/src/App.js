@@ -146,7 +146,17 @@ function App() {
               'line-width': 1
               }
             });
-            
+            //map.current.addSource('zipcodes', {type: "geojson", data:"http://127.0.0.1:5000/api/zipcode_boundaries"});
+            map.current.addLayer({
+              'id': 'zipcodesFill',
+              'type': 'fill',
+              'source': 'zipcodes', // reference the data source
+              'layout': {},
+              'paint': {
+              'fill-color': '#00FF00', // blue color fill
+              'fill-opacity': 0.1
+              }
+              });
 
         });
 
@@ -186,7 +196,7 @@ function App() {
       });
 
       const zPopup = new mapboxgl.Popup();
-      map.current.on('mouseenter', "zipcodes", (e) => {
+      map.current.on('click', "zipcodesFill", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const description = e.features[0].properties.ZCTA5CE10; 
         //console.log(e.lngLat.wrap()); ZCTA5CE10
@@ -197,9 +207,10 @@ function App() {
         }*/
         zPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
       });
-      map.current.on('mouseleave', "zipcodes", (e) => {
+      /*
+      map.current.on('mouseleave', "zipcodesFill", (e) => {
         zPopup.remove();
-      });
+      });*/
 
       map.current.on('click', 'NPPES', (e) => {
 
