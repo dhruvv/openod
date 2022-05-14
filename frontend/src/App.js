@@ -26,7 +26,7 @@ function App() {
     const keys = Object.keys(visibilityArray);
     for (var i = 0; i < keys.length; i++) {
       // If we are dealing with county boundary. update fill and outline layers since they are separate
-      if (keys[i] == "Jackson" || keys[i] == "Scioto") {
+      if (keys[i] == "Jackson" || keys[i] == "Scioto" || keys[i] == "zipcodes") {
         map.current.setLayoutProperty(keys[i], "visibility", visibilityArray[keys[i]]);
         map.current.setLayoutProperty(keys[i]+"Outline", "visibility", visibilityArray[keys[i]]);
       } else { // Otherwise, set layer to visible or not
@@ -137,7 +137,7 @@ function App() {
             });
             map.current.addSource('zipcodes', {type: "geojson", data:"http://127.0.0.1:5000/api/zipcode_boundaries"});
             map.current.addLayer({
-              'id': 'zipcodes',
+              'id': 'zipcodesOutline',
               'type': 'line',
               'source': 'zipcodes',
               'layout': {},
@@ -148,7 +148,7 @@ function App() {
             });
             //map.current.addSource('zipcodes', {type: "geojson", data:"http://127.0.0.1:5000/api/zipcode_boundaries"});
             map.current.addLayer({
-              'id': 'zipcodesFill',
+              'id': 'zipcodes',
               'type': 'fill',
               'source': 'zipcodes', // reference the data source
               'layout': {},
@@ -196,7 +196,7 @@ function App() {
       });
 
       const zPopup = new mapboxgl.Popup();
-      map.current.on('click', "zipcodesFill", (e) => {
+      map.current.on('click', "zipcodes", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const description = e.features[0].properties.ZCTA5CE10; 
         //console.log(e.lngLat.wrap()); ZCTA5CE10
@@ -260,10 +260,10 @@ function App() {
                 
                 
     });
- 
+    const eleJSON = {};
     return (
       <div>
-        <PersistentDrawerLeft callback={callbackFunction}/>
+        <PersistentDrawerLeft callback={callbackFunction} vArray={visibilityArray} eleJSON={eleJSON}/>
         <div ref={mapContainer} className="map-container" />
       </div>
     );

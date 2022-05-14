@@ -13,7 +13,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-
+import {DragDropContext, Droppable} from 'react-beautiful-dnd'
+import {DraggableItem} from './components/DraggableItem';
 
 const drawerWidth = 240;
 
@@ -73,6 +74,16 @@ export default function PersistentDrawerLeft(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const elements = ["NPPES", "SAMASA", "Project_Down", "zipcodes", "Jackson", "Scioto"];
+  const eleJSON = {"NPPES":"NPPES", "SAMASA":"SAMASA", "Project_Down":"Project_Down", 
+  "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline"};
+  const dragEndFunction = result => {
+   var finalD = result["destination"]["index"];
+   var source = result["source"]["index"];
+   var spliced = elements.splice(source,1)[0];
+   elements.splice(finalD, 0, spliced);
+   //console.log(result)
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -107,67 +118,29 @@ export default function PersistentDrawerLeft(props) {
         open={open}
       >
         <DrawerHeader>
+
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <FormGroup>
-            <FormControlLabel 
-              label="NPPES"
-              control={
-                <Checkbox 
-                  defaultChecked
-                  onChange={() => props.callback("NPPES")}
-                />
-              }
-            /> 
-            <FormControlLabel 
-            label="SAMASA" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("SAMASA")}
-              />
-            }
-          />
-          <FormControlLabel 
-            label="Project_Down" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("Project_Down")}
-              />
-            }
-          />
-           <FormControlLabel 
-            label="Zipcode boundaries" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("zipcodes")}
-              />
-            }
-          />
-            <FormControlLabel 
-            label="Jackson county outline and fill" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("Jackson")}
-              />
-            }
-          />
-             <FormControlLabel 
-            label="Scioto County Outline and Fill" 
-            control={
-              <Checkbox 
-                defaultChecked
-                onChange={() => props.callback("Scioto")}
-              />
-            }
-          />
-        </FormGroup>
+        <DragDropContext onDragEnd={dragEndFunction}>
+          <Droppable droppableId='formColumn'>
+            {provided => (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+              <FormGroup
+              >
+                {elements.map((element, index) => 
+                  {
+                    return(<DraggableItem key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
+                  }
+                )}
+                {provided.placeholder}
+              </FormGroup>
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </Drawer>
     </Box>
   );
