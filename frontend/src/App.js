@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import React, { useRef, useEffect, useState } from 'react'; 
-import Map from './Map';
+//import Map from './components/Map';
 import PersistentDrawerLeft from './Sidebar';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
@@ -35,6 +35,8 @@ function App() {
       }
     }
   }
+
+  //const updateZOrderCallback = ()
   const mapContainer = useRef(null);
     const map = useRef(null);
     const [zoom, setZoom] = useState(9);
@@ -52,7 +54,7 @@ function App() {
     useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => {
-            map.current.addSource('Jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
+        map.current.addSource('Jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
         map.current.addLayer({
             'id': 'Jackson',
             'type': 'fill',

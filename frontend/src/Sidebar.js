@@ -74,7 +74,7 @@ export default function PersistentDrawerLeft(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const elements = ["NPPES", "SAMASA", "Project_Down", "zipcodes", "Jackson", "Scioto"];
+  const elements = ["NPPES", "SAMASA", "Project_Down", "Jackson", "Scioto", "zipcodes" ];
   const eleJSON = {"NPPES":"NPPES", "SAMASA":"SAMASA", "Project_Down":"Project_Down", 
   "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline"};
   const dragEndFunction = result => {
