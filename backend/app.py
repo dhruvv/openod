@@ -1,12 +1,13 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify
 import json
 from pyDataverse.api import NativeApi, DataAccessApi
 from pyDataverse.models import Dataverse
 from flask_cors import CORS
-from pytopojson import feature
-import numpy as np
 from shapely.geometry import Polygon, Point
-import logging
+#from openpyxl import load_workbook
+import xlrd
+
+
 
 
 app = Flask(__name__)
@@ -39,7 +40,7 @@ def get_data(file_wanted):
         filename = file["dataFile"]["filename"]
         if filename == file_wanted:
             file_id = file["dataFile"]["id"]
-            print("File name {}, id {}".format(filename, file_id))
+            #print("File name {}, id {}".format(filename, file_id))
             response = data_api.get_datafile(file_id)
             rc = response.content
             geojson = json.loads(rc.decode('utf-8'))
@@ -53,9 +54,45 @@ def get_data(file_wanted):
                 if (is_there):
                     #jss["features"].remove(feature)
                     finalGeoJson["features"].append(feature)
-
             return finalGeoJson   
     return None
+
+def get_nibrs_data(year):
+    DOI = "doi:10.5072/FK2/ERTNY9"
+    dataset = api.get_dataset(DOI)
+    files_list = dataset.json()['data']['latestVersion']['files']
+    for file in files_list:
+        filename = file["dataFile"]["filename"]
+        if str(year) in filename:
+            file_id = file["dataFile"]["id"]
+            response = data_api.get_datafile(file_id)
+            with open(filename, "wb") as f:
+                f.write(response.content)
+                f.close()
+                print("Saved"+filename+"to disk")
+            book = xlrd.open_workbook(filename=filename)
+            sh = book.sheet_by_index(0)
+            index = 0
+            name = sh.cell_value(rowx = 4, colx = index)
+            while "Narcotic" not in name:
+                index += 1
+                name = sh.cell_value(rowx = 4, colx = index)
+            index2 = 0
+            county_row_name = sh.cell_value(rowx = index2, colx = 1)
+            while "Jackson" != county_row_name:
+                index2 += 1
+                county_row_name = sh.cell_value(rowx = index2, colx = 1)
+            index3 = 0
+            county_row_name = sh.cell_value(rowx = index3, colx = 1)
+            while "Scioto" != county_row_name:
+                index3 += 1
+                county_row_name = sh.cell_value(rowx = index3, colx = 1)    
+            j_nibrs = sh.cell_value(rowx = index2, colx = index)
+            s_nibrs = sh.cell_value(rowx  = index3, colx = index)
+            nibrsdata = {"Jackson":j_nibrs, "Scioto":s_nibrs}
+            return(json.dumps(nibrsdata))
+        
+
 
 def get_county_data(county_id):
     global counties_list
@@ -91,5 +128,10 @@ def return_county_boundary(county_id):
 def return_zipcode_boundaries():
     return jsonify(get_zipcode_data())
 
+@app.route('/api/NIBRS/<year>')
+def return_nibrs_data(year):
+    return jsonify(get_nibrs_data(year))
+    
+    
 
 

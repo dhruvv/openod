@@ -54,52 +54,6 @@ function App() {
     useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => {
-        map.current.addSource('Jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
-        map.current.addLayer({
-            'id': 'Jackson',
-            'type': 'fill',
-            'source': 'Jackson', // reference the data source
-            'layout': {},
-            //'visibility':'none',
-            'paint': {
-            'fill-color': '#0080ff', // blue color fill
-            'fill-opacity': 0.1
-            }
-            });
-            // Add a black outline around the polygon.
-            map.current.addLayer({
-            'id': 'JacksonOutline',
-            'type': 'line',
-            'source': 'Jackson',
-            'layout': {},
-            'paint': {
-            'line-color': '#000',
-            'line-width': 3
-            }
-            });
-            map.current.addSource('Scioto', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Scioto"});
-                // Add a new layer to visualize the polygon.
-            map.current.addLayer({
-                'id': 'Scioto',
-                'type': 'fill',
-                'source': 'Scioto', // reference the data source
-                'layout': {},
-                'paint': {
-                'fill-color': '#e892de', // blue color fill
-                'fill-opacity': 0.1
-                }
-                });
-                // Add a black outline around the polygon.
-              map.current.addLayer({
-                'id': 'SciotoOutline',
-                'type': 'line',
-                'source': 'Scioto',
-                'layout': {},
-                'paint': {
-                'line-color': '#000',
-                'line-width': 3
-                }
-              });
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
@@ -109,17 +63,6 @@ function App() {
             'id': 'NPPES',
             'type': 'symbol',
             'source': 'NPPES',
-            'layout': {
-            
-                    'icon-image': 'custom-marker',
-                    'icon-allow-overlap': true
-            }  
-            });
-            map.current.addSource('Project_Down', {type:"geojson", data:"http://127.0.0.1:5000/api/Project_Down"});
-            map.current.addLayer({
-            'id': 'Project_Down',
-            'type': 'symbol',
-            'source': 'Project_Down',
             'layout': {
             
                     'icon-image': 'custom-marker',
@@ -137,6 +80,63 @@ function App() {
                     'icon-allow-overlap': true
             }  
             });
+            map.current.addSource('Project_Down', {type:"geojson", data:"http://127.0.0.1:5000/api/Project_Down"});
+            map.current.addLayer({
+            'id': 'Project_Down',
+            'type': 'symbol',
+            'source': 'Project_Down',
+            'layout': {
+            
+                    'icon-image': 'custom-marker',
+                    'icon-allow-overlap': true
+            }  
+            });
+            map.current.addSource('Jackson', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Jackson"});
+            map.current.addLayer({
+                'id': 'Jackson',
+                'type': 'fill',
+                'source': 'Jackson', // reference the data source
+                'layout': {},
+                //'visibility':'none',
+                'paint': {
+                'fill-color': '#0080ff', // blue color fill
+                'fill-opacity': 0.1
+                }
+                });
+                // Add a black outline around the polygon.
+                map.current.addLayer({
+                'id': 'JacksonOutline',
+                'type': 'line',
+                'source': 'Jackson',
+                'layout': {},
+                'paint': {
+                'line-color': '#000',
+                'line-width': 3
+                }
+                });
+                map.current.addSource('Scioto', {type: "geojson", data: "http://127.0.0.1:5000/api/county_boundaries/Scioto"});
+                    // Add a new layer to visualize the polygon.
+                map.current.addLayer({
+                    'id': 'Scioto',
+                    'type': 'fill',
+                    'source': 'Scioto', // reference the data source
+                    'layout': {},
+                    'paint': {
+                    'fill-color': '#e892de', // blue color fill
+                    'fill-opacity': 0.1
+                    }
+                    });
+                    // Add a black outline around the polygon.
+                  map.current.addLayer({
+                    'id': 'SciotoOutline',
+                    'type': 'line',
+                    'source': 'Scioto',
+                    'layout': {},
+                    'paint': {
+                    'line-color': '#000',
+                    'line-width': 3
+                    }
+                  });
             map.current.addSource('zipcodes', {type: "geojson", data:"http://127.0.0.1:5000/api/zipcode_boundaries"});
             map.current.addLayer({
               'id': 'zipcodesOutline',
