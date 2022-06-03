@@ -2,11 +2,11 @@
 
 This is the frontend for the xOCAL Project. It is written in React.JS, and uses the MUI UI components, along with Mapbox GL JS for the GIS systems. It is divided into:
 
-    - *App.js*: Contains the Map component, along with containers for the Sidebar. This file is the "top level" file for the entire frontend, and contains the callbacks from the sidebar "control panel" of the app, which then affect the Map component by removing, reordering or adding layers, or modifying the properties thereof.
-    - *Sidebar.js*: The sidebar menu controlled by the Hamburger menu, along with the app bar for the project. This contains the configuration for `react-beautiful-dnd`, a framework that is used here in order to facilitate dragging and dropping in order to reorder the layers. It also contains the UI elements in the forms of checkboxes and sliders, which call a function passed to them in the props of the `Sidebar` component that is used within the top-level `App.js` component.
-    - components/ : This directory contains "small" components, usually one div. The "DraggableItem", which is a wrapper for each layer within the "Droppable" area, mainly uses components defined here, including
-        - Checkbox
-        - Checkbox with sliders 
+- *App.js*: Contains the Map component, along with containers for the Sidebar. This file is the "top level" file for the entire frontend, and contains the callbacks from the sidebar "control panel" of the app, which then affect the Map component by removing, reordering or adding layers, or modifying the properties thereof.
+ - *Sidebar.js*: The sidebar menu controlled by the Hamburger menu, along with the app bar for the project. This contains the configuration for `react-beautiful-dnd`, a framework that is used here in order to facilitate dragging and dropping in order to reorder the layers. It also contains the UI elements in the forms of checkboxes and sliders, which call a function passed to them in the props of the `Sidebar` component that is used within the top-level `App.js` component.
+ - components/ : This directory contains "small" components, usually one div. The "DraggableItem", which is a wrapper for each layer within the "Droppable" area, mainly uses components defined here, including
+    - Checkbox
+     - Checkbox with sliders 
 
 
 
