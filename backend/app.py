@@ -78,17 +78,23 @@ def get_nibrs_data(year):
                 index += 1
                 name = sh.cell_value(rowx = 4, colx = index)
             index2 = 0
-            county_row_name = sh.cell_value(rowx = index2, colx = 1)
-            while "Jackson" != county_row_name:
-                index2 += 1
+            try:
                 county_row_name = sh.cell_value(rowx = index2, colx = 1)
+                while "Jackson" != county_row_name:
+                    index2 += 1
+                    county_row_name = sh.cell_value(rowx = index2, colx = 1)
+                j_nibrs = sh.cell_value(rowx = index2, colx = index)
+            except:
+                 j_nibrs = "Data unavailable for year"
             index3 = 0
-            county_row_name = sh.cell_value(rowx = index3, colx = 1)
-            while "Scioto" != county_row_name:
-                index3 += 1
-                county_row_name = sh.cell_value(rowx = index3, colx = 1)    
-            j_nibrs = sh.cell_value(rowx = index2, colx = index)
-            s_nibrs = sh.cell_value(rowx  = index3, colx = index)
+            try:
+                county_row_name = sh.cell_value(rowx = index3, colx = 1)
+                while "Scioto" != county_row_name:
+                    index3 += 1
+                    county_row_name = sh.cell_value(rowx = index3, colx = 1)
+                s_nibrs = sh.cell_value(rowx  = index3, colx = index)
+            except:
+                 s_nibrs = "Data unavailable for year"      
             nibrsdata = {"Jackson":j_nibrs, "Scioto":s_nibrs}
             return(json.dumps(nibrsdata))
         

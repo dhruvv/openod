@@ -18,7 +18,7 @@ export function DraggableItem(props) {
                     defaultChecked
                     onChange={() => props.callback(props.id)}
                 />
-            }
+                }
             />
             </div>
         )}

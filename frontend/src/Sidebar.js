@@ -15,6 +15,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd'
 import {DraggableItem} from './components/DraggableItem';
+import { DraggableItemSlider } from './components/DraggableItemSlider';
 
 const drawerWidth = 240;
 
@@ -74,9 +75,9 @@ export default function PersistentDrawerLeft(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const elements = ["NPPES", "SAMASA", "Project_Down", "Jackson", "Scioto", "zipcodes" ];
+  const elements = ["NPPES", "SAMASA", "Project_Down", "Jackson", "Scioto", "zipcodes", "NIBRS"];
   const eleJSON = {"NPPES":"NPPES", "SAMASA":"SAMASA", "Project_Down":"Project_Down", 
-  "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline"};
+  "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline", "NIBRS":"NIBRS Data"};
   const dragEndFunction = result => {
    var finalD = result["destination"]["index"];
    var source = result["source"]["index"];
@@ -131,10 +132,14 @@ export default function PersistentDrawerLeft(props) {
               <FormGroup
               >
                 {elements.map((element, index) => 
-                  {
-                    return(<DraggableItem key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
+                  { 
+                    if (element != "NIBRS") {
+                      return(<DraggableItem key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
+                    } else {
+                      return (< DraggableItemSlider key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
+                    }
                   }
-                )}
+                )}  
                 {provided.placeholder}
               </FormGroup>
               </div>
