@@ -4,7 +4,7 @@ import {Draggable} from 'react-beautiful-dnd';
 
 
 export function DraggableItemSlider(props) {
-    
+
     return(
         <div>
         <Draggable draggableId={props.id} index={props.index}>
@@ -22,7 +22,15 @@ export function DraggableItemSlider(props) {
                             />
                             }
                         />
-                        <Slider defaultValue={50} aria-label="Default" valueLabelDisplay="auto" />
+                        <Slider  
+                         defaultValue={30}
+                         step={1}
+                         valueLabelDisplay="auto"
+                         onChange={props.nCallback}
+                         marks
+                         min={2012}
+                         max={2017}
+                        />
                     </div>
                 )}
                

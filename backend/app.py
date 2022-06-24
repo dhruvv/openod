@@ -1,3 +1,5 @@
+from curses import meta
+from venv import create
 from flask import Flask, jsonify
 import json
 from pyDataverse.api import NativeApi, DataAccessApi
@@ -6,9 +8,8 @@ from flask_cors import CORS
 from shapely.geometry import Polygon, Point
 #from openpyxl import load_workbook
 import xlrd
-
-
-
+import hashlib
+from os.path import exists
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,29 @@ BASE_URL = "https://datacommons.tdai.osu.edu"
 counties_list = []
 api = NativeApi(BASE_URL, API_TOKEN)
 data_api = DataAccessApi(BASE_URL, API_TOKEN)
+
+def metadata_check(name, doi):
+    full_dataset_meta = api.get_datafiles_metadata(doi)
+    meta_doi = json.loads(full_dataset_meta.content.decode('utf-8'))
+    #print(meta_doi)
+    for file in meta_doi["data"]:
+         if file["label"] in name:
+            hash = file["dataFile"]["checksum"]["value"]
+    if exists(name) and hashlib.md5(open(name, 'rb').read()).hexdigest() == hash:
+        print("Returning true for {}".format(name))
+        return True
+    else:
+        return False
+
+def createGeoJson(geojson):
+    finalGeoJson = { "type": "FeatureCollection","features": []}
+    for feature in geojson["features"]:
+        lng = feature["geometry"]["coordinates"][0]
+        lat = feature["geometry"]["coordinates"][1]
+        is_there =  (is_in_county("Scioto", lng, lat) or is_in_county("Jackson", lng, lat))
+        if (is_there):
+            finalGeoJson["features"].append(feature)
+    return finalGeoJson
 
 def is_in_county(county, lng, lat):
     global counties_list
@@ -32,30 +56,29 @@ def is_in_county(county, lng, lat):
 def get_data(file_wanted):
     DOI =  "doi:10.5072/FK2/P9B4YV"
     dataset = api.get_dataset(DOI)
-
+    metadata_check("", DOI)
     files_list = dataset.json()['data']['latestVersion']['files']
     geoJsons = []
     file_wanted = file_wanted + '.geojson'
-    for file in files_list:
-        filename = file["dataFile"]["filename"]
-        if filename == file_wanted:
-            file_id = file["dataFile"]["id"]
-            #print("File name {}, id {}".format(filename, file_id))
-            response = data_api.get_datafile(file_id)
-            rc = response.content
-            geojson = json.loads(rc.decode('utf-8'))
-            #print(geojson)
-            #geojson["type"] = "FeatureCollection"
-            finalGeoJson = { "type": "FeatureCollection","features": []}
-            for feature in geojson["features"]:
-                lng = feature["geometry"]["coordinates"][0]
-                lat = feature["geometry"]["coordinates"][1]
-                is_there =  (is_in_county("Scioto", lng, lat) or is_in_county("Jackson", lng, lat))
-                if (is_there):
-                    #jss["features"].remove(feature)
-                    finalGeoJson["features"].append(feature)
-            return finalGeoJson   
-    return None
+    if not metadata_check(file_wanted, DOI):
+        for file in files_list:
+            filename = file["dataFile"]["filename"]
+            if filename == file_wanted:
+                file_id = file["dataFile"]["id"]
+                #print("File name {}, id {}".format(filename, file_id))
+                response = data_api.get_datafile(file_id)
+                rc = response.content
+                geojson = json.loads(rc.decode('utf-8'))
+                with open(filename, "w+") as f:
+                    f.write(rc)
+                    f.close()
+                    print("Saved"+filename+"to disk")
+    else:
+        with open(file_wanted, "r") as f:
+            print("Opened file {}".format(file_wanted))
+            geojson = json.load(f)
+    return createGeoJson(geojson)
+    
 
 def get_nibrs_data(year):
     DOI = "doi:10.5072/FK2/ERTNY9"
@@ -65,11 +88,12 @@ def get_nibrs_data(year):
         filename = file["dataFile"]["filename"]
         if str(year) in filename:
             file_id = file["dataFile"]["id"]
-            response = data_api.get_datafile(file_id)
-            with open(filename, "wb") as f:
-                f.write(response.content)
-                f.close()
-                print("Saved"+filename+"to disk")
+            if not metadata_check(filename, DOI):
+                response = data_api.get_datafile(file_id)
+                with open(filename, "wb") as f:
+                    f.write(response.content)
+                    f.close()
+                    print("Saved"+filename+"to disk")
             book = xlrd.open_workbook(filename=filename)
             sh = book.sheet_by_index(0)
             index = 0

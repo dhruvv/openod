@@ -136,7 +136,7 @@ export default function PersistentDrawerLeft(props) {
                     if (element != "NIBRS") {
                       return(<DraggableItem key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
                     } else {
-                      return (< DraggableItemSlider key={element} callback={props.callback} id={element} labelName={eleJSON[element]} index={index}/>)
+                      return (< DraggableItemSlider key={element} callback={props.callback} nCallback={props.nCallback} id={element} labelName={eleJSON[element]} index={index}/>)
                     }
                   }
                 )}  

@@ -3,17 +3,26 @@ import './App.css';
 import React, { useRef, useEffect, useState } from 'react'; 
 //import Map from './components/Map';
 import PersistentDrawerLeft from './Sidebar';
+import LoadingModal from './components/LoadingModal';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
-
 function App() {
+
+  const [modalOpen, setModalOpen] = useState(false);
+    
+  const handleModalOpen = () => setModalOpen(true);
+  const handleModalClose = () => setModalOpen(false);
+
+  var nibrsData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
+  var nibrsYear = 2012;
   // This array defines whether a layer should be shown or not
   var visibilityArray = {"NPPES":"visible", 
                         "SAMASA":"visible", 
                         "Project_Down":"visible", 
                         "Jackson":"visible", 
                         "Scioto":"visible",
-                        "zipcodes":"visible"
+                        "zipcodes":"visible",
+                        "NIBRS":"visible"
   };
   // Called by checkbox on / off 
   const callbackFunction = (paramName) => {
@@ -35,7 +44,24 @@ function App() {
       }
     }
   }
+  var prevYear;
+  
+  const updateNibrsCallback = (event, year) => {
+    console.log(year);
+    nibrsYear = year;
+    const tempData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
+    nibrsData = tempData;
+    setModalOpen(true);
+    fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
+            .then(response => response.json())
+            .then(data => finishNibrsUpdate(data));
+  }
 
+  const finishNibrsUpdate = (data) => {
+    nibrsData = JSON.parse(data);
+    console.log(nibrsData);
+    setModalOpen(false);
+  }
   //const updateZOrderCallback = ()
   const mapContainer = useRef(null);
     const map = useRef(null);
@@ -53,7 +79,7 @@ function App() {
     });
     useEffect(() => {
         if (!map.current) return;
-        map.current.on('load', () => {
+        map.current.on('load', () => { 
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
@@ -170,7 +196,8 @@ function App() {
      
       map.current.on('mouseenter', "Jackson", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = "Jackson County"
+        //console.log(nibrsData);
+        const description = "Jackson County\n"+nibrsData["Jackson"]+"\n"+nibrsYear;
         //console.log(e.lngLat.wrap());
         const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
         /*
@@ -184,7 +211,7 @@ function App() {
       });
       map.current.on('mouseenter', "Scioto", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = "Scioto County"
+        const description = "Scioto County\n"+nibrsData["Scioto"]+"\n"+nibrsYear
         //console.log(e.lngLat.wrap());
         const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
         /*
@@ -209,10 +236,6 @@ function App() {
         }*/
         zPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
       });
-      /*
-      map.current.on('mouseleave', "zipcodesFill", (e) => {
-        zPopup.remove();
-      });*/
 
       map.current.on('click', 'NPPES', (e) => {
 
@@ -265,7 +288,8 @@ function App() {
     const eleJSON = {};
     return (
       <div>
-        <PersistentDrawerLeft callback={callbackFunction} vArray={visibilityArray} eleJSON={eleJSON}/>
+        <PersistentDrawerLeft callback={callbackFunction} nCallback={updateNibrsCallback} vArray={visibilityArray} eleJSON={eleJSON}/>
+        <LoadingModal modalOpen={modalOpen} handleModalClose={handleModalClose} />
         <div ref={mapContainer} className="map-container" />
       </div>
     );
