@@ -6,7 +6,6 @@ from pyDataverse.api import NativeApi, DataAccessApi
 from pyDataverse.models import Dataverse
 from flask_cors import CORS
 from shapely.geometry import Polygon, Point
-#from openpyxl import load_workbook
 import xlrd
 import hashlib
 from os.path import exists

@@ -51,17 +51,13 @@ function App() {
     nibrsYear = year;
     const tempData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
     nibrsData = tempData;
-    setModalOpen(true);
+    setModalOpen(true);   
     fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
             .then(response => response.json())
-            .then(data => finishNibrsUpdate(data));
+            .then(data => nibrsData = JSON.parse(data))
+            .then(() => setModalOpen(false));
   }
 
-  const finishNibrsUpdate = (data) => {
-    nibrsData = JSON.parse(data);
-    console.log(nibrsData);
-    setModalOpen(false);
-  }
   //const updateZOrderCallback = ()
   const mapContainer = useRef(null);
     const map = useRef(null);
@@ -196,7 +192,7 @@ function App() {
      
       map.current.on('mouseenter', "Jackson", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
-        //console.log(nibrsData);
+        console.log(nibrsData);
         const description = "Jackson County\n"+nibrsData["Jackson"]+"\n"+nibrsYear;
         //console.log(e.lngLat.wrap());
         const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
@@ -239,7 +235,7 @@ function App() {
 
       map.current.on('click', 'NPPES', (e) => {
 
-          const coordinates = e.features[0].geometry.coordinates.slice();
+          const coordinates = e.features[0].gaeometry.coordinates.slice();
           const description = e.features[0].properties.NAME1 + " NPPES";
           
        
