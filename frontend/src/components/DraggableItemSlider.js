@@ -26,7 +26,7 @@ export function DraggableItemSlider(props) {
                          defaultValue={30}
                          step={1}
                          valueLabelDisplay="auto"
-                         onChange={props.nCallback}
+                         onChangeCommitted={props.nCallback}
                          marks
                          min={2012}
                          max={2017}

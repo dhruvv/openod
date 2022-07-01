@@ -6,15 +6,16 @@ import PersistentDrawerLeft from './Sidebar';
 import LoadingModal from './components/LoadingModal';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
+var nibrsData, nibrsYear;
+
 function App() {
 
   const [modalOpen, setModalOpen] = useState(false);
-    
+  
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => setModalOpen(false);
 
-  var nibrsData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
-  var nibrsYear = 2012;
+  //var nibrsData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
   // This array defines whether a layer should be shown or not
   var visibilityArray = {"NPPES":"visible", 
                         "SAMASA":"visible", 
@@ -49,12 +50,10 @@ function App() {
   const updateNibrsCallback = (event, year) => {
     console.log(year);
     nibrsYear = year;
-    const tempData = {"Scioto":"Loading data...", "Jackson":"Loading data..."};
-    nibrsData = tempData;
     setModalOpen(true);   
     fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
             .then(response => response.json())
-            .then(data => nibrsData = JSON.parse(data))
+            .then(data => nibrsData = {...JSON.parse(data)})
             .then(() => setModalOpen(false));
   }
 
@@ -76,6 +75,7 @@ function App() {
     useEffect(() => {
         if (!map.current) return;
         map.current.on('load', () => { 
+            updateNibrsCallback(0, 2012);
             map.current.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
             (error, image) => {
             if (error) throw error;
