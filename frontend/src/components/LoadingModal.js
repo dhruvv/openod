@@ -1,4 +1,4 @@
-import { Modal, Box} from '@mui/material';
+import { Modal, Box, Typography} from '@mui/material';
 import LoadingIcons from 'react-loading-icons'
 
 export default function LoadingModal(props) {
@@ -15,14 +15,26 @@ export default function LoadingModal(props) {
       };
 
     return(
-        <Box sx={style}>
+        
           <Modal
                 open={props.modalOpen}
-                onClose={props.handleModalClose}
+                onClose={(e, value) => {props.handleModalClose(e, value, false)}}
             >
-                <LoadingIcons.Bars />
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                         Loading,....
+                    </Typography>
+                    <LoadingIcons.Bars
+                        height="3em"
+                        fill="#06bcee"
+                        width="10em"
+                    />
+
+                </Box>
+
+                
             </Modal>
-        </Box>
+  
     )
     
 }

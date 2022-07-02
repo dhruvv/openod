@@ -7,6 +7,7 @@ import LoadingModal from './components/LoadingModal';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 mapboxgl.accessToken = 'pk.eyJ1IjoibXJhbHBhY2EiLCJhIjoiY2pyYmV5dWg4MTJheDQzcGNxeGtleWx0bCJ9.SwBpLsVT9FGuA9JoEHg60w';
 var nibrsData, nibrsYear;
+var loadedCount = 0;
 
 function App() {
 
@@ -25,6 +26,20 @@ function App() {
                         "zipcodes":"visible",
                         "NIBRS":"visible"
   };
+  const matchArrays = () => {
+
+  }
+
+  const isUserDefinedLayer = (e) => {
+    const keys = Object.keys(visibilityArray);
+    const sourceID = e["sourceId"]
+    for (var i = 0; i < keys.length; i++) {
+      if (sourceID == keys[i] && e["isSourceLoaded"])  {
+        return true;
+      }
+    }
+    return false;
+  }
   // Called by checkbox on / off 
   const callbackFunction = (paramName) => {
     const updatedArray = {...visibilityArray};
@@ -44,17 +59,22 @@ function App() {
         console.log(`Set property ${keys[i]} to ${visibilityArray[keys[i]]}`);
       }
     }
-  }
-  var prevYear;
-  
-  const updateNibrsCallback = (event, year) => {
+  }  
+  const updateNibrsCallback = (event, year, toSetModalClose) => {
     console.log(year);
     nibrsYear = year;
-    setModalOpen(true);   
-    fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
-            .then(response => response.json())
-            .then(data => nibrsData = {...JSON.parse(data)})
-            .then(() => setModalOpen(false));
+    if (!toSetModalClose) {
+      setModalOpen(true);   
+      fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
+              .then(response => response.json())
+              .then(data => nibrsData = {...JSON.parse(data)})
+              .then(() => setModalOpen(false));
+    }else{
+      fetch("http://127.0.0.1:5000/api/NIBRS/"+year)
+      .then(response => response.json())
+      .then(data => nibrsData = {...JSON.parse(data)})
+    }
+    
   }
 
   //const updateZOrderCallback = ()
@@ -192,7 +212,7 @@ function App() {
      
       map.current.on('mouseenter', "Jackson", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
-        console.log(nibrsData);
+        //console.log(nibrsData);
         const description = "Jackson County\n"+nibrsData["Jackson"]+"\n"+nibrsYear;
         //console.log(e.lngLat.wrap());
         const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
@@ -278,6 +298,22 @@ function App() {
                     .setHTML(description)
                     .addTo(map.current);
                     });
+    map.current.on('sourcedata', (e) => {
+      var loadedArray;
+      const keys = Object.keys(visibilityArray);
+      //cdcsxcconsole.log("Calling loaded event");
+      console.log(e);
+      if (isUserDefinedLayer(e)) { 
+        loadedCount++;
+        loadedArray.append(e["sourceId"]);
+        console.log((e["sourceId"]));
+        if(loadedArray.sort().join(',')=== keys.sort().join(',')){
+          setModalOpen(false);
+        }
+      }
+    }
+    
+    )
                 
                 
     });
