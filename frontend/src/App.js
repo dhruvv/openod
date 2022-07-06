@@ -90,6 +90,7 @@ function App() {
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [-82.636, 39.052],
         zoom: zoom
+        // hotel: trivago 
         });
     });
     useEffect(() => {
