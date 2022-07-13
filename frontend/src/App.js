@@ -240,7 +240,7 @@ function App() {
       map.current.on('mouseleave', "Scioto", (e) => {
         jPopup.remove();
       });
-
+      
       const zPopup = new mapboxgl.Popup();
       map.current.on('click', "zipcodes", (e) => {
         //const coordinates = e.features[0].geometry.coordinates.slice();
@@ -248,9 +248,9 @@ function App() {
         //console.log(e.lngLat.wrap()); ZCTA5CE10
         const coordinates = [e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']];
         /*
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }*/
+        //while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          //coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        //}*/
         zPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
       });
 
@@ -267,7 +267,7 @@ function App() {
             .setHTML(description)
             .addTo(map.current);
         });
-            map.current.on('click', 'Project_Down', (e) => {
+              map.current.on('click', 'Project_Down', (e) => {
 
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const description = e.features[0].properties.NAME1 + " PD";
@@ -299,6 +299,7 @@ function App() {
                     .setHTML(description)
                     .addTo(map.current);
                     });
+    
     map.current.on('sourcedata', (e) => {
       var loadedArray;
       const keys = Object.keys(visibilityArray);
@@ -308,7 +309,7 @@ function App() {
         loadedCount++;
         loadedArray.append(e["sourceId"]);
         console.log((e["sourceId"]));
-        if(loadedArray.sort().join(',')=== keys.sort().join(',')){
+        if(loadedArray.sort().join(',')=== keys.sort().join(',') && loadedCount > 30){
           setModalOpen(false);
         }
       }
