@@ -55,7 +55,6 @@ def is_in_county(county, lng, lat):
 def get_data(file_wanted):
     DOI =  "doi:10.5072/FK2/P9B4YV"
     dataset = api.get_dataset(DOI)
-    metadata_check("", DOI)
     files_list = dataset.json()['data']['latestVersion']['files']
     geoJsons = []
     file_wanted = file_wanted + '.geojson'
@@ -135,6 +134,12 @@ def get_zipcode_data():
         zc = json.load(z)
     return(zc)
 
+
+def get_scioto_oibrs_data():
+    DOI = ""
+
+
+
 @app.before_first_request
 def load_counties():
     global counties_list
@@ -160,7 +165,7 @@ def return_zipcode_boundaries():
 @app.route('/api/NIBRS/<year>')
 def return_nibrs_data(year):
     return jsonify(get_nibrs_data(year))
-    
-    
 
-
+@app.route('/api/OIBRS/<ounty>')
+def return_oibrs_data(county):
+    return jsonify(get_oibrs_data(county))
