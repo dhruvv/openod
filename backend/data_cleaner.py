@@ -35,9 +35,9 @@ def census_geocoder(address):
     request_data_json = json.loads(request_data)
     results = request_data_json["result"]["addressMatches"]
     if len(results) < 1:
-        print("No match, should defer to google maps")
+        return 0
     else:
-        print(results[0]["coordinates"])
+        return(results[0]["coordinates"])
 
 
 
@@ -57,24 +57,21 @@ def df_to_geojson(jackson_data, name):
             zip = str(int(row[8]))
         else:
             zip = str(0)
-        if address2 and has_numbers(address2[0:7]):
-            address1 = ""
-            final_geocode_address = address2 + ", " + city + ", " + "OH, " + zip
-        elif address1 and has_numbers(address1[0:7]):
-            address2 = ""
+        if address1 and has_numbers(address1[0:7]) and not pd.isna(address1):
+            #address1 = ""
+            final_geocode_address = address1 + ", " + city + ", " + "OH, " + zip
+        elif address2 and has_numbers(address2[0:7]) and not pd.isna(address2):
+            #address2 = ""
             final_geocode_address = address2 + ", " + city + ", " + "OH, " + zip
         else:   
             final_geocode_address = address1 + ", " + address2 + ", " + city + ", " + "OH, " + zip
         geocode_address = final_geocode_address
         final_geocode_address = geocode_address.lower().replace("and", "&").replace("@", "&").replace("nan,", "")
         if final_geocode_address not in addresses_checked.keys():
-            census_geocoder(final_geocode_address)
-            sleep(1)
-            ''' 
-            #try:
-                print(final_geocode_address)
+            #census_geocoder(final_geocode_address)
+            try:
+                #print(final_geocode_address)
                 census_geocoder(final_geocode_address)
-                sleep(1)
         
             except:
                 latlng = False
@@ -89,7 +86,7 @@ def df_to_geojson(jackson_data, name):
             jackson_geojson["features"].append(feature)
         with open(name+'.geojson', 'w') as fp:
             json.dump(jackson_geojson, fp) 
-        '''
+        
 
 dataset = api.get_dataset(DOI) 
 files_list = dataset.json()['data']['latestVersion']['files']
@@ -109,10 +106,10 @@ for  file in files_list:
             f.write(response.content)
             f.close()
 
-#jackson_data = pd.read_csv('OIBRS Jackson County Data.tab', sep="\t")
+jackson_data = pd.read_csv('OIBRS Jackson County Data.tab', sep="\t")
 scioto_data = pd.read_csv('OIBRS Scioto County.tab', sep="\t")
 
-#df_to_geojson(jackson_data, "Jackson County OIBRS")
+df_to_geojson(jackson_data, "Jackson County OIBRS")
 df_to_geojson(scioto_data, "Scioto County OIBRS")
 
 
