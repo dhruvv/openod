@@ -16,7 +16,8 @@ BASE_URL = "https://datacommons.tdai.osu.edu"
 datasets = ["Jackson", "Scioto"]
 CENSUS_GEOCODER_BASE_URL = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address="
 CENSUS_GEOCODER_FINAL_URL = "&benchmark=2020&format=json&key=cb140d7e96af88d7b4fb23a669a7c206ee06709f"
-
+GOOGLEMAPS_GEOCODER_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
+GOOGLEMAPS_GEOCODER_FINAL_URL = "&key=AIzaSyA5x5Pughiwqp2pTSfJ2iEPVhF33a172e4"
 
 api = NativeApi(BASE_URL, API_TOKEN)
 data_api = DataAccessApi(BASE_URL, API_TOKEN)
@@ -26,11 +27,18 @@ def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
 
 def googlemaps_geocoder(addrwss):
-    pass
-
+    url_encoded = urllib.parse.quote(address)
+    queryURL = GOOGLEMAPS_GEOCODER_BASE_URL+url_encoded+GOOGLEMAPS_GEOCODER_FINAL_URL
+    request_data = requests.get(queryURL).content
+    request_data_json = json.loads(request_data)
+    results = request_data_json["results"]
+    if len(results) < 1:
+        return 0
+    else:
+        return(results[0]["geometry"]["location"])
 
 def census_geocoder(address):
-    print(address)
+    #print(address)
     url_encoded = urllib.parse.quote(address)
     queryURL = CENSUS_GEOCODER_BASE_URL+url_encoded+CENSUS_GEOCODER_FINAL_URL
     request_data = requests.get(queryURL).content
@@ -68,23 +76,21 @@ def df_to_geojson(jackson_data, name):
         final_geocode_address = geocode_address.lower().replace("and", "&").replace("@", "&").replace("nan,", "")
         if final_geocode_address not in addresses_checked.keys():
             #census_geocoder(final_geocode_address)
-            try:
-                #print(final_geocode_address)
-                census_geocoder(final_geocode_address)
-        
-            except:
-                latlng = False
-                a_latlng = [0,0]
-                addresses_checked[final_geocode_address] = a_latlng
-            
+            res = census_geocoder(final_geocode_address)
+            if not res:
+                res = googlemaps_geocoder(final_geocode_address)
+                if not res:
+                    print(final_geocode_address)
+                latlng[0] = res["lat"]
+                latlng = res
         else:
             latlng = addresses_checked[final_geocode_address]  
 
         if latlng:    
             feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [latlng[1], latlng[0]]}, "properties": {"name": str(row[1]), "address": final_geocode_address, "zip": zip, "city": str(row[7]), "state": str(row[4]), "county": str(row[3])}}
             jackson_geojson["features"].append(feature)
-        with open(name+'.geojson', 'w') as fp:
-            json.dump(jackson_geojson, fp) 
+    with open(name+'.geojson', 'w+') as fp:
+        json.dump(jackson_geojson, fp) 
         
 
 dataset = api.get_dataset(DOI) 
