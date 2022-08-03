@@ -25,6 +25,8 @@ anchor_latlng = [38.963592, -82.815316]
 def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
 
+def googlemaps_geocoder(addrwss):
+    pass
 
 
 def census_geocoder(address):
@@ -39,9 +41,6 @@ def census_geocoder(address):
     else:
         print(results[0]["coordinates"])
 
-
-
-    
 
 def df_to_geojson(jackson_data, name):
     addresses_checked = {}
@@ -70,6 +69,7 @@ def df_to_geojson(jackson_data, name):
         if final_geocode_address not in addresses_checked.keys():
             census_geocoder(final_geocode_address)
             sleep(1)
+
             ''' 
             #try:
                 print(final_geocode_address)
