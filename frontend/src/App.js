@@ -24,7 +24,9 @@ function App() {
                         "Jackson":"visible", 
                         "Scioto":"visible",
                         "zipcodes":"visible",
-                        "NIBRS":"visible"
+                        "NIBRS":"visible",
+                        "scioto_oibrs":"visible",
+                        "jackson_oibrs":"visible"
   };
   const matchArrays = () => {
 
@@ -77,6 +79,12 @@ function App() {
     
   }
 
+  const generateOIBRSPopup = (e) => {
+    const keys = Object.keys(e);
+    var popup = "";
+    
+  }
+
   //const updateZOrderCallback = ()
   const mapContainer = useRef(null);
     const map = useRef(null);
@@ -106,6 +114,28 @@ function App() {
             'id': 'NPPES',
             'type': 'symbol',
             'source': 'NPPES',
+            'layout': {
+            
+                    'icon-image': 'custom-marker',
+                    'icon-allow-overlap': true
+            }  
+            });
+            map.current.addSource('scioto_oibrs', {type:"geojson", data:"http://127.0.0.1:5000/api/OIBRS/scioto"});
+            map.current.addLayer({
+            'id': 'scioto_oibrs',
+            'type': 'symbol',
+            'source': 'scioto_oibrs',
+            'layout': {
+            
+                    'icon-image': 'custom-marker',
+                    'icon-allow-overlap': true
+            }  
+            });
+            map.current.addSource('jackson_oibrs', {type:"geojson", data:"http://127.0.0.1:5000/api/OIBRS/jackson"});
+            map.current.addLayer({
+            'id': 'jackson_oibrs',
+            'type': 'symbol',
+            'source': 'jackson_oibrs',
             'layout': {
             
                     'icon-image': 'custom-marker',
@@ -252,6 +282,34 @@ function App() {
           //coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         //}*/
         zPopup.setLngLat(coordinates).setHTML(description).addTo(map.current);
+      });
+
+      map.current.on('click', 'jackson_oibrs', (e) => {
+
+        const coordinates = e.features[0]["geometry"]["coordinates"].slice();
+        const description = e.features[0]["properties"]["IncidentNumber"];
+        
+     
+        //console.log(coordinates);
+           
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(description)
+          .addTo(map.current);
+      });
+      map.current.on('click', 'scioto_oibrs', (e) => {
+        
+        const coordinates = e.features[0]["geometry"]["coordinates"].slice();
+        const description = e.features[0]["properties"]["IncidentNumber"];
+        
+     
+        //console.log(coordinates);
+           
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(description)
+          .addTo(map.current);
+        console.log(e.features[0]["geometry"]["coordinates"]);  
       });
 
       map.current.on('click', 'NPPES', (e) => {

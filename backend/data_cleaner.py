@@ -10,6 +10,13 @@ import json
 import urllib.parse
 import requests
 
+'''
+DATA CLEANING SCRIPT FOR OIBRS DATA 
+
+Uses Census Geocoder and Google Maps Geocoder to convert addresses into mappable coordinates
+
+'''
+
 DOI = "doi:10.5072/FK2/JGT4GH"
 API_TOKEN = "ac71d785-30b7-4fd0-9c16-6cf118783533"
 BASE_URL = "https://datacommons.tdai.osu.edu"
@@ -26,7 +33,7 @@ anchor_latlng = [38.963592, -82.815316]
 def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
 
-def googlemaps_geocoder(addrwss):
+def googlemaps_geocoder(address):
     url_encoded = urllib.parse.quote(address)
     queryURL = GOOGLEMAPS_GEOCODER_BASE_URL+url_encoded+GOOGLEMAPS_GEOCODER_FINAL_URL
     request_data = requests.get(queryURL).content
@@ -53,6 +60,7 @@ def census_geocoder(address):
 def df_to_geojson(jackson_data, name):
     addresses_checked = {}
     jackson_geojson  = {"type": "FeatureCollection", "features": []}
+    head = jackson_data.keys()
     for row in jackson_data.itertuples():
         address1 = str(row[5])
         print("A1 "+address1)
@@ -81,17 +89,34 @@ def df_to_geojson(jackson_data, name):
                 res = googlemaps_geocoder(final_geocode_address)
                 if not res:
                     print(final_geocode_address)
-                latlng[0] = res["lat"]
-                latlng = res
-        else:
-            latlng = addresses_checked[final_geocode_address]  
+                    lat = 0
+                    lng = 0
+                    #addresses_checked[final_geocode_address] = {"coordinates":[lat, lng], "data":[row[:5].append(row[9:])]}
+                    feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [lng, lat]}, "properties": {head[index]: str(row[index+1]) for index in range (0, len(row) - 1)}}
+                    addresses_checked[final_geocode_address] = [lat, lng]
+                else:
 
-        if latlng:    
-            feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [latlng[1], latlng[0]]}, "properties": {"name": str(row[1]), "address": final_geocode_address, "zip": zip, "city": str(row[7]), "state": str(row[4]), "county": str(row[3])}}
-            jackson_geojson["features"].append(feature)
+                    #addresses_checked[final_geocode_address] = {"coordinates":[res["lat"], res["lng"]], "data":[row[:5].append(row[9:])]}
+                    feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [res["lat"], res["lng"]]}, "properties": {head[index]: str(row[index+1]) for index in range (0, len(row) - 1)}}
+
+            else:
+                latlng = [res["y"], res["x"]]
+                #addresses_checked[final_geocode_address] = {"coordinates":[res[1], res[0]], "data":[row[:5].append(row[9:])]}
+                feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [latlng[1], latlng[0]]}, "properties": {head[index]: str(row[index+1]) for index in range (0, len(row) - 1)}}
+
+                    
+        else:
+            #addresses_checked["final_geocode_address"]["data"].append(row[:5].append(row[9:]))
+            feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [latlng[1], latlng[0]]}, "properties": {head[index]: str(row[index+1]) for index in range (0, len(row) - 1)}}
+        jackson_geojson["features"].append(feature)
     with open(name+'.geojson', 'w+') as fp:
-        json.dump(jackson_geojson, fp) 
+        json.dump(jackson_geojson, fp)
+'''
         
+    feature = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [latlng[1], latlng[0]]}, "properties": {head[index]: str(row[index+1]) for index in range (0, len(row) - 1}}
+    
+ 
+'''        
 
 dataset = api.get_dataset(DOI) 
 files_list = dataset.json()['data']['latestVersion']['files']

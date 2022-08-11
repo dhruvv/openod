@@ -136,7 +136,14 @@ def get_zipcode_data():
 
 
 def get_scioto_oibrs_data():
-    DOI = ""
+    with open("Scioto County OIBRS.geojson", "r") as f:
+        sc = json.load(f)
+    return(sc)
+
+def get_jackson_oibrs_data():
+    with open("Jackson County OIBRS.geojson", "r") as f:
+        sc = json.load(f)
+    return(sc)
 
 
 
@@ -166,6 +173,10 @@ def return_zipcode_boundaries():
 def return_nibrs_data(year):
     return jsonify(get_nibrs_data(year))
 
-@app.route('/api/OIBRS/<ounty>')
-def return_oibrs_data(county):
-    return jsonify(get_oibrs_data(county))
+@app.route('/api/OIBRS/scioto')
+def return_oibrs_data():
+    return jsonify(get_scioto_oibrs_data())
+
+@app.route('/api/OIBRS/jackson')
+def return_jackson_oibrs_data():
+    return jsonify(get_jackson_oibrs_data())

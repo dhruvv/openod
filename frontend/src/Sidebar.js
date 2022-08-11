@@ -75,9 +75,9 @@ export default function PersistentDrawerLeft(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const elements = ["NPPES", "SAMASA", "Project_Down", "Jackson", "Scioto", "zipcodes", "NIBRS"];
+  const elements = ["NPPES", "SAMASA", "Project_Down", "Jackson", "Scioto", "zipcodes", "jackson_oibrs", "scioto_oibrs","NIBRS"];
   const eleJSON = {"NPPES":"NPPES", "SAMASA":"SAMASA", "Project_Down":"Project_Down", 
-  "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline", "NIBRS":"NIBRS Data"};
+  "zipcodes":"Zipcodes Layer", "Jackson":"Jackson County Outline", "Scioto":"Scioto County Outline", "NIBRS":"NIBRS Data", "jackson_oibrs":"Jackson County OIBRS", "scioto_oibrs":"Scioto County OIBRS"};
   const dragEndFunction = result => {
    var finalD = result["destination"]["index"];
    var source = result["source"]["index"];
