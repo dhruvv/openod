@@ -82,6 +82,12 @@ function App() {
   const generateOIBRSPopup = (e) => {
     const keys = Object.keys(e);
     var popup = "";
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] != "properties") {
+        popup += `<b>${keys[i]}</b>: ${e[keys[i]]}<br>`;
+      }
+    }
+    return popup;
     
   }
 
@@ -287,7 +293,7 @@ function App() {
       map.current.on('click', 'jackson_oibrs', (e) => {
 
         const coordinates = e.features[0]["geometry"]["coordinates"].slice();
-        const description = e.features[0]["properties"]["IncidentNumber"];
+        const description = generateOIBRSPopup(e.features[0]["properties"]);
         
      
         //console.log(coordinates);
@@ -300,9 +306,8 @@ function App() {
       map.current.on('click', 'scioto_oibrs', (e) => {
         
         const coordinates = e.features[0]["geometry"]["coordinates"].slice();
-        const description = e.features[0]["properties"]["IncidentNumber"];
+        const description = generateOIBRSPopup(e.features[0]["properties"]);
         
-     
         //console.log(coordinates);
            
         new mapboxgl.Popup()
